@@ -2,8 +2,6 @@ const api = axios.create({
     baseURL: 'https://api.github.com/users/'
 });
 
-const createEl = element => document.createElement(element);
-
 class App {
     constructor() {
         this.profiles = [];
@@ -13,13 +11,20 @@ class App {
         this.eventHandler();
     }
 
+    createEl(element, inner) {
+        const newElement = document.createElement(element);
+        if (inner) newElement.innerHTML = inner;
+        
+        return newElement;
+    };
+
     eventHandler() {
         this.formElement.addEventListener('submit', event => this.addProfile(event));
     }
 
     setLoading(loading = true) {
         if (loading) {
-            const loadElement = createEl('div');
+            const loadElement = this.createEl('div');
             loadElement.setAttribute('id', 'loading');
             this.profilesContainer.appendChild(loadElement);
         } else {
@@ -60,28 +65,17 @@ class App {
 
     render() {
         const profile = this.profiles[this.profiles.length - 1];
-        const imgElement = createEl('img');
+        const imgElement = this.createEl('img');
         imgElement.setAttribute('src', profile.avatar_url);
 
-        const nameElement = createEl('h3');
-        nameElement.innerHTML = profile.name;
+        const nameElement = this.createEl('h3', profile.name);
+        const bioElement = this.createEl('h4', profile.bio);
+        const reposElement = this.createEl('p', `${profile.public_repos} repositórios`);
+        const gistsElement = this.createEl('p', `${profile.public_gists} gists`);
+        const followersElement = this.createEl('p', `${profile.followers} seguidores`);
+        const followingElement = this.createEl('p', `Seguindo ${profile.following}`);
 
-        const bioElement = createEl('h4');
-        bioElement.innerHTML = profile.bio;
-
-        const reposElement = createEl('p');
-        reposElement.innerHTML = `${profile.public_repos} repositórios`;
-
-        const gistsElement = createEl('p');
-        gistsElement.innerHTML = `${profile.public_gists} gists`;
-
-        const followersElement = createEl('p');
-        followersElement.innerHTML = `${profile.followers} seguidores`;
-
-        const followingElement = createEl('p');
-        followingElement.innerHTML = `Seguindo ${profile.following}`;
-
-        const infoWrapper = createEl('div');
+        const infoWrapper = this.createEl('div');
         infoWrapper.classList.add('profile-content');
         infoWrapper.appendChild(nameElement);
         infoWrapper.appendChild(bioElement);
@@ -90,7 +84,7 @@ class App {
         infoWrapper.appendChild(followersElement);
         infoWrapper.appendChild(followingElement);
 
-        const card = createEl('div');
+        const card = this.createEl('div');
         card.classList.add('profile-card');
         card.setAttribute('id', profile.login);
         card.appendChild(imgElement);
