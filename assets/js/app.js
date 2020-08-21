@@ -26,7 +26,7 @@ class App {
         if (loading) {
             const loadElement = this.createEl('div');
             loadElement.setAttribute('id', 'loading');
-            this.profilesContainer.appendChild(loadElement);
+            this.profilesContainer.insertAdjacentElement("beforebegin", loadElement);
         } else {
             document.getElementById('loading').remove();
         }
@@ -38,12 +38,15 @@ class App {
 
         if (profileInput.length === 0) return;
 
+        const found = this.profiles.some(profile => profile.login.toLowerCase() == profileInput.toLowerCase());
+        if (found) return;
+
         this.setLoading();
 
         try {
             const response = await api.get(profileInput);
             const { login, avatar_url, name, bio, public_repos, public_gists, followers, following } = response.data;
-
+            console.log(login)
             this.profiles.push({
                 login,
                 avatar_url,
@@ -90,7 +93,12 @@ class App {
         card.appendChild(imgElement);
         card.appendChild(infoWrapper);
 
-        this.profilesContainer.appendChild(card);
+        const firstCard = document.querySelector('.profile-card');
+        if (firstCard) {
+            firstCard.insertAdjacentElement('beforebegin', card);
+        } else {
+            this.profilesContainer.appendChild(card);
+        }
 
         this.redirectToGitHub();
     }
@@ -107,4 +115,3 @@ class App {
 }
 
 new App();
-
